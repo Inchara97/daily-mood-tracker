@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Vibe Tracker</title>
+
+    <!-- Google Fonts: 'Space Grotesk' for that tech/brutalist feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* GEN Z THEME: Neo-Brutalism / Y2K Aesthetic */
+        :root {
+            --bg-color: #E0F2F1;
+            --container-bg: #FFFFFF;
+            --accent-color: #FD5E53;
+            /* Vibrant coral red */
+            --border-color: #000000;
+            --text-color: #000000;
+            --shadow-offset: 6px;
+            --highlight-color: #FFE66D;
+            /* Bright yellow */
+        }
+
+        body {
+            /* Dot pattern background */
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#000 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Space Grotesk', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+
+        /* Brutalist Container */
+        .container {
+            background-color: var(--container-bg);
+            padding: 2.5rem;
+            border: 4px solid var(--border-color);
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--border-color);
+            text-align: center;
+            max-width: 500px;
+            width: 85%;
+            position: relative;
+            /* No border-radius for brutalist look */
+        }
+
+        h1 {
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            border-bottom: 4px solid var(--border-color);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        /* Mood buttons container */
+        .mood-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Style for individual mood buttons */
+        .mood-btn {
+            background-color: #ffffff;
+            border: 3px solid var(--border-color);
+            box-shadow: 4px 4px 0px var(--border-color);
+            padding: 15px;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Hover effect */
+        .mood-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--border-color);
+            background-color: var(--highlight-color);
+        }
+
+        /* Active/Selected state */
+        .mood-btn:active,
+        .mood-btn.active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--border-color);
+            background-color: var(--accent-color);
+        }
+
+        /* Feedback message area */
+        #message-area {
+            font-size: 1.3rem;
+            min-height: 1.5em;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            background-color: var(--highlight-color);
+            border: 2px solid var(--border-color);
+            padding: 10px;
+            display: inline-block;
+            transform: rotate(-2deg);
+            box-shadow: 3px 3px 0px var(--border-color);
+        }
+
+        /* Last updated timestamp */
+        #timestamp {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 2rem;
+            min-height: 1.2em;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        /* Reset Button */
+        #reset-btn {
+            margin-bottom: 2rem;
+            background-color: #ff9a9e;
+            color: var(--text-color);
+            border: 3px solid var(--border-color);
+            box-shadow: 4px 4px 0px var(--border-color);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: bold;
+            font-size: 1rem;
+            text-transform: uppercase;
+            transition: all 0.1s ease;
+        }
+
+        #reset-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--border-color);
+            background-color: #ff8085;
+        }
+
+        #reset-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+
+        /* Summary section for counts */
+        .summary {
+            background-color: #ffffff;
+            border: 3px solid var(--border-color);
+            padding: 1.5rem;
+            text-align: left;
+            position: relative;
+        }
+
+        /* Decorative badge for summary */
+        .summary::before {
+            content: "STATS";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background-color: var(--border-color);
+            color: white;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .summary h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px dashed var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        /* List of counts */
+        #counts-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        #counts-list li {
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+            /* border-bottom: 2px solid #eee; */
+            /* Removed for cleaner look inside grid */
+        }
+
+        #counts-list li strong {
+            background-color: var(--border-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            /* Slight rounding on badge */
+        }
+
+        /* Pulse animation for click */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            /* Less jarring for brutalist */
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse-anim {
+            animation: pulse 0.2s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Daily Vibe Check</h1>
+
+        <!-- Mood Buttons -->
+        <div class="mood-options">
+            <button class="mood-btn" data-mood="Main Character" title="Main Character">🤩</button>
+            <button class="mood-btn" data-mood="Gucci" title="Gucci">✨</button>
+            <button class="mood-btn" data-mood="Mid" title="Mid">😐</button>
+            <button class="mood-btn" data-mood="Down Bad" title="Down Bad">📉</button>
+            <button class="mood-btn" data-mood="Crying in the Club" title="Crying in the Club">😭</button>
+        </div>
+
+        <!-- Feedback Message -->
+        <div id="message-area">Pick ur vibe...</div>
+
+        <!-- Last updated timestamp -->
+        <div id="timestamp"></div>
+
+        <!-- Reset Button -->
+        <button id="reset-btn">Reset the Check</button>
+
+        <!-- Summary of counts -->
+        <div class="summary">
+            <h3>Vibe Stats (Session)</h3>
+            <ul id="counts-list">
+                <!-- Counts will be populated here by JavaScript -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        // Gen Z messages
+        const moodMessages = {
+            "Main Character": "Slay! Main character energy only.",
+            "Gucci": "It's giving thriving. Keep it up.",
+            "Mid": "Just existing? Valid.",
+            "Down Bad": "Oof. Touch some grass maybe?",
+            "Crying in the Club": "Sending hugs. You got this bestie."
+        };
+
+        // --- State ---
+        // Object to track counts for each mood
+        const moodCounts = {
+            "Main Character": 0,
+            "Gucci": 0,
+            "Mid": 0,
+            "Down Bad": 0,
+            "Crying in the Club": 0
+        };
+
+        // --- DOM Elements ---
+        const buttons = document.querySelectorAll('.mood-btn');
+        const messageArea = document.getElementById('message-area');
+        const countsList = document.getElementById('counts-list');
+        const timestampDisplay = document.getElementById('timestamp');
+        const resetBtn = document.getElementById('reset-btn');
+
+        // --- Functions ---
+
+        // Function to update the summary UI
+        function updateSummary() {
+            countsList.innerHTML = '';
+
+            for (const [mood, count] of Object.entries(moodCounts)) {
+                // Create list item
+                const li = document.createElement('li');
+                // Find matching emoji
+                const emoji = document.querySelector(`.mood-btn[data-mood="${mood}"]`).textContent;
+
+                li.innerHTML = `<span>${emoji} ${mood}</span> <strong>${count}</strong>`;
+                countsList.appendChild(li);
+            }
+        }
+
+        // Initialize summary on load
+        updateSummary();
+
+        // Function to update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            timestampDisplay.textContent = `Last vibe check: ${timeString}`;
+        }
+
+        // --- Event Listeners ---
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 1. Remove 'active' class from all buttons
+                buttons.forEach(b => b.classList.remove('active'));
+
+                // 2. Add 'active' class to clicked button
+                btn.classList.add('active');
+
+                // 3. Add Pulse Animation
+                btn.classList.add('pulse-anim');
+                // Remove class after animation completes so it can be re-triggered
+                setTimeout(() => btn.classList.remove('pulse-anim'), 200);
+
+                // 4. Get the selected mood name
+                const selectedMood = btn.getAttribute('data-mood');
+
+                // 5. Update the message
+                messageArea.textContent = moodMessages[selectedMood];
+
+                // 6. Increment the count
+                moodCounts[selectedMood]++;
+
+                // 7. Update the summary display
+                updateSummary();
+
+                // 8. Update Timestamp
+                updateTimestamp();
+            });
+        });
+
+        // Reset Button Logic
+        resetBtn.addEventListener('click', () => {
+            // Reset counts
+            for (let key in moodCounts) {
+                moodCounts[key] = 0;
+            }
+
+            // Reset UI
+            buttons.forEach(b => {
+                b.classList.remove('active');
+                b.classList.remove('pulse-anim');
+            });
+            messageArea.textContent = "Pick ur vibe...";
+            timestampDisplay.textContent = "";
+
+            // Update Summary
+            updateSummary();
+        });
+
+    </script>
+</body>
+
+</html>
